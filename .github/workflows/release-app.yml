@@ -865,6 +865,17 @@ jobs:
           OPENBLAS_PATH: ${{ github.workspace }}/apps/screenpipe-app-tauri/src-tauri/openblas
         run: bunx tauri build --verbose ${{ matrix.tauri-args }}
 
+      - name: Upload Windows NSIS bundle as artifact (fork build, unsigned)
+        if: always() && matrix.os_type == 'windows'
+        uses: actions/upload-artifact@v4
+        with:
+          name: screenpipe-windows-${{ matrix.target }}-unsigned
+          path: |
+            apps/screenpipe-app-tauri/src-tauri/target/${{ matrix.target }}/release/bundle/nsis/*.exe
+            apps/screenpipe-app-tauri/src-tauri/target/${{ matrix.target }}/release/bundle/nsis/*.nsis.zip
+          if-no-files-found: warn
+          retention-days: 7
+
       - name: Sign NSIS installer with SSL.com EV (Windows)
         # Tauri's signCommand handles inner binaries, but the final NSIS
         # installer is built AFTER signCommand runs - so we sign it here
